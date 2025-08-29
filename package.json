@@ -20,7 +20,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@react-email/components": "0.0.12",
     "@react-email/render": "^0.0.9-canary.2",
-    "ai": "^5.0.22",
+    "ai": "^5.0.28",
     "axios": "^1.8.2",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
