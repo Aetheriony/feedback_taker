@@ -191,7 +191,7 @@ export default function SendMessage() {
               ))
             ) : (
               <p className="text-muted-foreground text-sm">
-                No messages yet. Click "Suggest Messages" to generate some!
+                {`No messages yet. Click "Suggest Messages" to generate some!`}
               </p>
             )}
           </CardContent>
