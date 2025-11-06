@@ -95,6 +95,24 @@ export default function SendMessage() {
     }
   };
 
+  const cleanMessage = (msg: string) => {
+    try {
+      // Try parsing as JSON first
+      const parsed = JSON.parse(msg);
+      if (parsed.code) return parsed.code.trim();
+      if (parsed.message) return parsed.message.trim();
+      return msg.trim();
+    } catch {
+      // Remove curly braces, quotes, and prefixes like "code:"
+      return msg
+        .replace(/[{}"]/g, '') // remove braces and quotes
+        .replace(/^code\s*:\s*/i, '') // remove "code:" prefix (case insensitive)
+        .replace(/^message\s*:\s*/i, '') // remove "message:" prefix if any
+        .trim();
+    }
+  };
+
+
   return (
     <div className="container mx-auto my-8 p-6 bg-white rounded max-w-4xl">
       <h1 className="text-4xl font-bold mb-6 text-center">
@@ -134,39 +152,52 @@ export default function SendMessage() {
         </form>
       </Form>
 
-      <div className="space-y-4 my-8">
-        <div className="space-y-2">
+      <div className="my-10 space-y-6">
+        {/* Header and Suggest Button */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">Suggested Messages</h2>
+            <p className="text-sm text-muted-foreground">
+              Click on any message below to select it.
+            </p>
+          </div>
           <Button
             onClick={fetchSuggestedMessages}
-            className="my-4"
             disabled={isSuggestLoading}
+            className="w-full sm:w-auto"
           >
-            Suggest Messages
+            {isSuggestLoading ? "Loading..." : "Suggest Messages"}
           </Button>
-          <p>Click on any message below to select it.</p>
         </div>
-        <Card>
+
+        {/* Message List */}
+        <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-all">
           <CardHeader>
-            <h3 className="text-xl font-semibold">Messages</h3>
+            <h3 className="text-lg font-semibold">Messages</h3>
           </CardHeader>
-          <CardContent className="flex flex-col space-y-4">
+          <CardContent className="flex flex-col space-y-3">
             {error ? (
-              <p className="text-red-500">{error.message}</p>
-            ) : (
+              <p className="text-sm text-red-500 font-medium">{error.message}</p>
+            ) : parseStringMessages(completion).length > 0 ? (
               parseStringMessages(completion).map((message, index) => (
                 <Button
                   key={index}
                   variant="outline"
-                  className="mb-2"
-                  onClick={() => handleMessageClick(message)}
+                  className="justify-start text-left hover:bg-gray-50 transition"
+                  onClick={() => handleMessageClick(cleanMessage(message))}
                 >
-                  {message}
+                  {cleanMessage(message)}
                 </Button>
               ))
+            ) : (
+              <p className="text-muted-foreground text-sm">
+                No messages yet. Click "Suggest Messages" to generate some!
+              </p>
             )}
           </CardContent>
         </Card>
       </div>
+
       <Separator className="my-6" />
       <div className="text-center">
         <div className="mb-4">Get Your Message Board</div>
